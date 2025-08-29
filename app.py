@@ -1,5 +1,5 @@
 import requests
-import gradio as gr
+import streamlit as gr
 
 # Function to fetch weather data
 def get_weather(city):
