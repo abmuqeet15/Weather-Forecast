@@ -1,5 +1,5 @@
 import requests
-import streamlit as gr
+import streamlit as st
 
 # Function to fetch weather data
 def get_weather(city):
@@ -8,7 +8,7 @@ def get_weather(city):
     geo_response = requests.get(geo_url).json()
 
     if "results" not in geo_response:
-        return f"❌ City '{city}' not found. Try again."
+        return None, f"❌ City '{city}' not found. Try again."
 
     lat = geo_response["results"][0]["latitude"]
     lon = geo_response["results"][0]["longitude"]
@@ -18,7 +18,7 @@ def get_weather(city):
     weather_response = requests.get(weather_url).json()
 
     if "current_weather" not in weather_response:
-        return "❌ Could not fetch weather data."
+        return None, "❌ Could not fetch weather data."
 
     weather = weather_response["current_weather"]
     temperature = weather["temperature"]
@@ -33,16 +33,28 @@ def get_weather(city):
     }
     condition_text = weather_codes.get(condition, "Unknown")
 
-    return f"📍 City: {city}\n🌡️ Temperature: {temperature} °C\n💨 Windspeed: {windspeed} km/h\n🌤️ Condition: {condition_text}"
+    report = {
+        "city": city,
+        "temperature": f"{temperature} °C",
+        "windspeed": f"{windspeed} km/h",
+        "condition": condition_text
+    }
 
-# Gradio UI
-with st.Blocks() as demo:
-    st.Markdown("<h1 style='text-align:center'>🌦️ Weather Forecast App by ABM</h1>")
-    city = st.Textbox(label="Enter City Name")
-    output = st.Textbox(label="Weather Report")
-    btn = st.Button("Get Forecast")
-    btn.click(get_weather, inputs=city, outputs=output)
+    return report, None
 
-# Run the app
-if __name__ == "__main__":
-    demo.launch()
+
+# Streamlit App
+st.set_page_config(page_title="Weather Forecast App", page_icon="🌦️", layout="centered")
+
+st.title("🌦️ Weather Forecast App")
+city = st.text_input("Enter City Name:")
+
+if st.button("Get Forecast"):
+    report, error = get_weather(city)
+    if error:
+        st.error(error)
+    else:
+        st.success(f"📍 City: {report['city']}")
+        st.write(f"🌡️ Temperature: {report['temperature']}")
+        st.write(f"💨 Windspeed: {report['windspeed']}")
+        st.write(f"🌤️ Condition: {report['condition']}")
