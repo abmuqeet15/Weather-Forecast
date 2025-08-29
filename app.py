@@ -36,11 +36,11 @@ def get_weather(city):
     return f"📍 City: {city}\n🌡️ Temperature: {temperature} °C\n💨 Windspeed: {windspeed} km/h\n🌤️ Condition: {condition_text}"
 
 # Gradio UI
-with gr.Blocks() as demo:
-    gr.Markdown("<h1 style='text-align:center'>🌦️ Weather Forecast App by ABM</h1>")
-    city = gr.Textbox(label="Enter City Name")
-    output = gr.Textbox(label="Weather Report")
-    btn = gr.Button("Get Forecast")
+with st.Blocks() as demo:
+    st.Markdown("<h1 style='text-align:center'>🌦️ Weather Forecast App by ABM</h1>")
+    city = st.Textbox(label="Enter City Name")
+    output = st.Textbox(label="Weather Report")
+    btn = st.Button("Get Forecast")
     btn.click(get_weather, inputs=city, outputs=output)
 
 # Run the app
